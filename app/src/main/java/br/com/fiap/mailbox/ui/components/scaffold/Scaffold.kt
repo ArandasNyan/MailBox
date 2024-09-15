@@ -12,7 +12,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import br.com.fiap.mailbox.R
-import br.com.fiap.mailbox.ui.components.bottomSheet.BottomSheet
 import br.com.fiap.mailbox.ui.components.email.EmailList
 import kotlinx.coroutines.launch
 
@@ -20,8 +19,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ScaffoldContent(
     drawerState: DrawerState, // Receber o drawerState
-    onDismissRequest: () -> Unit, // Função para fechar o BottomSheet
-    showBottomSheet: Boolean, // Receber o estado do BottomSheet
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -80,14 +77,5 @@ fun ScaffoldContent(
             onDelete = { email -> /* TODO: Handle deleting */ },
             onFavorite = { email -> /* TODO: Handle marking as favorite */ }
         )
-
-        // Exibe o BottomSheet se showBottomSheet for true
-        if (showBottomSheet) {
-            BottomSheet(
-                showBottomSheet = showBottomSheet,
-                onDismissRequest = onDismissRequest,
-                sheetState = sheetState
-            )
-        }
     }
 }

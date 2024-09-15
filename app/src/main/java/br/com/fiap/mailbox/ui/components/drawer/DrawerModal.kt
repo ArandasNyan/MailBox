@@ -3,6 +3,7 @@ package br.com.fiap.mailbox.ui.components.drawer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -17,89 +18,115 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import br.com.fiap.mailbox.R
+import br.com.fiap.mailbox.ui.components.bottomSheet.BottomSheet
 import br.com.fiap.mailbox.ui.components.global.CustomDivider
 import br.com.fiap.mailbox.ui.components.scaffold.ScaffoldContent
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerModal() {
+fun DrawerModal(navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false,
+        confirmValueChange = { true } // Aceita qualquer mudança de estado
+    )
 
     // Inicializa `labels` como uma lista vazia
-    var labels by remember { mutableStateOf(emptyList<String>()) }
+    var labels by remember { mutableStateOf(emptyList<Pair<String, Color>>()) }
 
     ModalNavigationDrawer(
         drawerState = drawerState, // Controla o estado do drawer
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.padding(end = 56.dp),
+                modifier = Modifier
+                    .padding(end = 56.dp)
+                    .fillMaxHeight(), // Certifique-se de que o drawer preenche a altura
                 drawerContainerColor = MaterialTheme.colorScheme.background
             ) {
-                // Top section with MailBox title and avatar
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp, 8.dp)
-                        .height(48.dp),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "M",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                            lineHeight = 28.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "MailBox",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                // Column containing fixed items and label section
                 Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(0.dp, 0.dp, 0.dp, 16.dp)
+                        .padding(bottom = 16.dp)
+                        .fillMaxSize() // Certifique-se de que a coluna principal preenche a altura total
                 ) {
-                    // Fixed navigation items (Inbox, Starred, etc.)
-                    Column {
-                        FixedNavigationItems() // Fixed navigation items like Inbox, Starred, etc.
-                        CustomDivider(direction = "horizontal", isFull = true)
-
-                        // Dynamic labels section: Always show the label header and add button
-                        LabelsSection(
-                            labels = labels,
-                            onLabelSelected = { label -> /* Handle label selection */ },
-                            onLabelAdd = { /* Add a new label */
-                                labels = labels + "New Label" // Isso é apenas um exemplo
-                            },
-                            onLabelRemove = { labelToRemove ->
-                                labels = labels.filterNot { it == labelToRemove } // Remove o label selecionado
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f) // Permite que o LazyColumn preencha o espaço disponível, mas não mais do que isso
+                    ) {
+                        // Adicionando os elementos fixos dentro do LazyColumn usando `item`
+                        item {
+                            // Top section with MailBox title and avatar
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp, 8.dp)
+                                    .height(48.dp),
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.primaryContainer,
+                                            shape = RoundedCornerShape(8.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "M",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        lineHeight = 28.sp
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    "MailBox",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
-                        )
+                        }
+
+                        item {
+                            // Fixed navigation items (Inbox, Starred, etc.)
+                            Column {
+                                FixedNavigationItems { route ->
+                                    navController.navigate(route)
+                                }
+                                CustomDivider(direction = "horizontal", isFull = true)
+                            }
+                        }
+
+                        // Seção de labels dinâmicos
+                        item {
+                            LabelsSection(
+                                labels = labels,
+                                onLabelSelected = { label -> /* Handle label selection */ },
+                                onLabelAdd = { name, color ->
+                                    labels = labels + (name to color)
+                                },
+                                onLabelRemove = { labelToRemove ->
+                                    labels = labels.filterNot { it.first == labelToRemove }
+                                }
+                            )
+                        }
                     }
 
-                    // Bottom section for user info and avatar
+                    // Botão na parte inferior
                     Button(
                         onClick = {
-                            showBottomSheet = true // Exibe o BottomSheet
+                            showBottomSheet = true
                         },
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.padding(12.dp, 0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp, 0.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiaryContainer)
                     ) {
@@ -142,11 +169,16 @@ fun DrawerModal() {
             }
         }
     ) {
-        // Passa o estado do drawer e as funções de controle para o ScaffoldContent
         ScaffoldContent(
             drawerState = drawerState,
+        )
+
+        // Adicionar o modal do BottomSheet
+        BottomSheet(
             showBottomSheet = showBottomSheet,
-            onDismissRequest = { showBottomSheet = false }
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState,
+            navController = navController // Passa o NavController
         )
     }
 }

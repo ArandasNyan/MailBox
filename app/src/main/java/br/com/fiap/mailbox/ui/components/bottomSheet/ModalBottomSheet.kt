@@ -14,7 +14,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import br.com.fiap.mailbox.R
+import br.com.fiap.mailbox.navigation.Routes
 import br.com.fiap.mailbox.ui.components.global.CustomSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,7 +24,8 @@ import br.com.fiap.mailbox.ui.components.global.CustomSpacer
 fun BottomSheet(
     showBottomSheet: Boolean,
     onDismissRequest: () -> Unit, // Função para controlar o fechamento
-    sheetState: SheetState
+    sheetState: SheetState,
+    navController: NavController // Adicione o NavController aqui
 ) {
     if (showBottomSheet) {
         ModalBottomSheet(
@@ -53,7 +56,10 @@ fun BottomSheet(
                 ConfigButton(
                     icon = ImageVector.vectorResource(R.drawable.user_round_cog),
                     text = "Configurações de usuário",
-                    onClick = onDismissRequest // Exemplo: pode fechar ou fazer outra ação
+                    onClick = {
+                        onDismissRequest() // Fechar o BottomSheet
+                        navController.navigate(Routes.UserSettings) // Navegar para Configurações de Usuário
+                    }
                 )
 
                 CustomSpacer(direction = "vertical", isFull = false, size = 8)
@@ -61,7 +67,10 @@ fun BottomSheet(
                 ConfigButton(
                     icon = ImageVector.vectorResource(R.drawable.settings),
                     text = "Configurações de aplicativo",
-                    onClick = onDismissRequest
+                    onClick = {
+                        onDismissRequest() // Fechar o BottomSheet
+                        navController.navigate(Routes.AppSettings) // Navegar para Configurações de Aplicativo
+                    }
                 )
             }
         }
