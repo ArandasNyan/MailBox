@@ -171,6 +171,7 @@ fun DrawerModal(navController: NavController) {
     ) {
         ScaffoldContent(
             drawerState = drawerState,
+            navController = navController
         )
 
         // Adicionar o modal do BottomSheet

@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import br.com.fiap.mailbox.model.email.Email
 
 @Composable
@@ -49,10 +50,11 @@ fun EmailItem(
     email: Email,
     onArchive: () -> Unit,
     onDelete: () -> Unit,
-    onFavorite: () -> Unit
+    onFavorite: () -> Unit,
+    navController: NavController // Adiciona o NavController como parâmetro
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    var clickPosition by remember { mutableStateOf(Offset.Zero) } // Captura a posição do clique
+    var clickPosition by remember { mutableStateOf(Offset.Zero) }
     val density = LocalDensity.current
 
     Box(
@@ -61,8 +63,13 @@ fun EmailItem(
             .background(Color.Transparent, shape = RoundedCornerShape(8.dp))
             .pointerInput(Unit) {
                 detectTapGestures(
+                    onPress = { /* Placeholder for press */ },
+                    onTap = {
+                        // Ao clicar no item, navega para a página de detalhes
+                        navController.navigate("emailDetail/${email.id}")
+                    },
                     onLongPress = { offset ->
-                        clickPosition = offset // Armazena a posição do clique
+                        clickPosition = offset
                         showMenu = true
                     }
                 )
@@ -101,8 +108,8 @@ fun EmailItem(
                 )
                 Text(
                     text = email.content,
-                    maxLines = 1, // Limita a 1 linha
-                    overflow = TextOverflow.Ellipsis, // Adiciona "..." no final se o texto for muito longo
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
@@ -113,7 +120,7 @@ fun EmailItem(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
                 offset = with(density) {
-                    DpOffset(clickPosition.x.toDp(), clickPosition.y.toDp()) // Converte para DpOffset
+                    DpOffset(clickPosition.x.toDp(), clickPosition.y.toDp())
                 }
             ) {
                 DropdownMenuItem(

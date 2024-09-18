@@ -11,7 +11,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import br.com.fiap.mailbox.R
+import br.com.fiap.mailbox.navigation.Routes
 import br.com.fiap.mailbox.ui.components.email.EmailList
 import kotlinx.coroutines.launch
 
@@ -19,9 +21,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ScaffoldContent(
     drawerState: DrawerState, // Receber o drawerState
+    navController: NavController // Adiciona o navController como parâmetro
 ) {
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
 
     Scaffold(
         topBar = {
@@ -49,7 +51,9 @@ fun ScaffoldContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* todo */ }) {
+                    IconButton(onClick = {
+                        navController.navigate(Routes.Search)
+                    }) {
                         Icon(
                             ImageVector.vectorResource(R.drawable.search),
                             contentDescription = "Search Icon",
@@ -61,7 +65,9 @@ fun ScaffoldContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Pode exibir outra ação ou manter */ }
+                onClick = {
+                    navController.navigate(Routes.ComposeEmail)
+                }
             ) {
                 Icon(
                     Icons.Filled.Create,
@@ -73,6 +79,7 @@ fun ScaffoldContent(
     ) { innerPadding ->
         EmailList(
             modifier = Modifier.padding(innerPadding),
+            navController = navController,
             onArchive = { email -> /* TODO: Handle archiving */ },
             onDelete = { email -> /* TODO: Handle deleting */ },
             onFavorite = { email -> /* TODO: Handle marking as favorite */ }

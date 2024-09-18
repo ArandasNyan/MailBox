@@ -7,6 +7,7 @@ object Routes {
     const val Sent = "sent"
     const val Drafts = "drafts"
     const val Trash = "trash"
+    const val Search = "search"
     const val Archived = "archived"
     const val UserSettings = "userSettings"
     const val AppSettings = "appSettings"
