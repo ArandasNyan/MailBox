@@ -7,10 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
+import br.com.fiap.mailbox.viewmodel.EmailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SentScreen (navController: NavController) {
+fun SentScreen (navController: NavController, emailViewModel: EmailViewModel) {
+    val emails = emailViewModel.getEmails()
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Sent Screen") }, navigationIcon = {

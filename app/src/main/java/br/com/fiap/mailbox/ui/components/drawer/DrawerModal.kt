@@ -23,10 +23,11 @@ import br.com.fiap.mailbox.R
 import br.com.fiap.mailbox.ui.components.bottomSheet.BottomSheet
 import br.com.fiap.mailbox.ui.components.global.CustomDivider
 import br.com.fiap.mailbox.ui.components.scaffold.ScaffoldContent
+import br.com.fiap.mailbox.viewmodel.EmailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerModal(navController: NavController) {
+fun DrawerModal(navController: NavController, emailViewModel: EmailViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -171,7 +172,8 @@ fun DrawerModal(navController: NavController) {
     ) {
         ScaffoldContent(
             drawerState = drawerState,
-            navController = navController
+            navController = navController,
+            emailViewModel = EmailViewModel()
         )
 
         // Adicionar o modal do BottomSheet

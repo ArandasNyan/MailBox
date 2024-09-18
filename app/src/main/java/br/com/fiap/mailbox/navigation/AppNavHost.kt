@@ -2,11 +2,10 @@ package br.com.fiap.mailbox.navigation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import br.com.fiap.mailbox.R
-import br.com.fiap.mailbox.model.email.Email
 import br.com.fiap.mailbox.ui.screens.appSettings.AppSettingsScreen
 import br.com.fiap.mailbox.ui.screens.archived.ArchivedScreen
 import br.com.fiap.mailbox.ui.screens.detailsEmail.EmailDetailScreen
@@ -19,33 +18,38 @@ import br.com.fiap.mailbox.ui.screens.snoozed.SnoozedScreen
 import br.com.fiap.mailbox.ui.screens.starred.StarredScreen
 import br.com.fiap.mailbox.ui.screens.trash.TrashScreen
 import br.com.fiap.mailbox.ui.screens.userSettings.UserSettingsScreen
+import br.com.fiap.mailbox.viewmodel.EmailViewModel
 
 @Composable
-fun AppNavHost(navController: NavHostController, startDestination: String = Routes.Inbox) {
+fun AppNavHost(
+    navController: NavHostController,
+    startDestination: String = Routes.Inbox,
+    emailViewModel: EmailViewModel = viewModel() // Usando o ViewModel padrão do Compose
+) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Routes.Inbox) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Starred) {
-            StarredScreen(navController = navController)
+            StarredScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Snoozed) {
-            SnoozedScreen(navController = navController)
+            SnoozedScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Sent) {
-            SentScreen(navController = navController)
+            SentScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Drafts) {
-            DraftsScreen(navController = navController)
+            DraftsScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Trash) {
-            TrashScreen(navController = navController)
+            TrashScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Search) {
-            SearchScreen(navController = navController)
+            SearchScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.Archived) {
-            ArchivedScreen(navController = navController)
+            ArchivedScreen(navController = navController, emailViewModel = emailViewModel)
         }
         composable(Routes.UserSettings) {
             UserSettingsScreen(navController = navController)
@@ -58,8 +62,8 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
         }
 
         composable("emailDetail/{emailId}") { backStackEntry ->
-            val emailId = backStackEntry.arguments?.getString("emailId")
-            val email = getEmailById(emailId) // Busca o email pelo ID
+            val emailId = backStackEntry.arguments?.getString("emailId")?.toIntOrNull()
+            val email = emailId?.let { emailViewModel.getEmailById(it) }
 
             if (email != null) {
                 EmailDetailScreen(navController = navController, email = email)
@@ -70,14 +74,3 @@ fun AppNavHost(navController: NavHostController, startDestination: String = Rout
         }
     }
 }
-
-// Simulação de função para buscar email pelo ID
-fun getEmailById(emailId: String?): Email? {
-    val emails = listOf(
-        Email(1, "John Doe", "Meeting Invitation", "You are invited to a meeting tomorrow.", R.drawable.catwhatsapp),
-        Email(2, "Jane Doe", "Project Update", "The project status is on track.", R.drawable.catwhatsapp)
-    )
-
-    return emails.find { it.id.toString() == emailId }
-}
-

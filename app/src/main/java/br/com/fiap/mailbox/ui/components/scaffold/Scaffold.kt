@@ -15,15 +15,19 @@ import androidx.navigation.NavController
 import br.com.fiap.mailbox.R
 import br.com.fiap.mailbox.navigation.Routes
 import br.com.fiap.mailbox.ui.components.email.EmailList
+import br.com.fiap.mailbox.viewmodel.EmailViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldContent(
     drawerState: DrawerState, // Receber o drawerState
-    navController: NavController // Adiciona o navController como parâmetro
+    navController: NavController, // Adiciona o navController como parâmetro
+    emailViewModel: EmailViewModel
 ) {
     val scope = rememberCoroutineScope()
+    // Obtenha a lista de emails do ViewModel
+    val emails = emailViewModel.getEmails()
 
     Scaffold(
         topBar = {
@@ -78,11 +82,12 @@ fun ScaffoldContent(
         }
     ) { innerPadding ->
         EmailList(
+            emails = emails,
             modifier = Modifier.padding(innerPadding),
             navController = navController,
             onArchive = { email -> /* TODO: Handle archiving */ },
             onDelete = { email -> /* TODO: Handle deleting */ },
-            onFavorite = { email -> /* TODO: Handle marking as favorite */ }
+            onFavorite = { email -> emailViewModel.toggleStarred(email.id) }
         )
     }
 }

@@ -51,11 +51,14 @@ fun EmailItem(
     onArchive: () -> Unit,
     onDelete: () -> Unit,
     onFavorite: () -> Unit,
-    navController: NavController // Adiciona o NavController como parâmetro
+    navController: NavController
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var clickPosition by remember { mutableStateOf(Offset.Zero) }
     val density = LocalDensity.current
+
+    // Remover quebras de linha e espaços desnecessários
+    val previewContent = email.content.replace("\\s+".toRegex(), " ").trim()
 
     Box(
         modifier = Modifier
@@ -107,7 +110,7 @@ fun EmailItem(
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    text = email.content,
+                    text = previewContent,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 14.sp,

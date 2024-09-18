@@ -295,8 +295,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="archive_restore" />
-                            <entry key="sourceFile" value="C:\Users\Emmanoel\Downloads\archive-restore.svg" />
+                            <entry key="outputName" value="star_filled" />
+                            <entry key="sourceFile" value="C:\Users\Emmanoel\Pictures\svg_assets\Star_Filled.svg" />
                           </map>
                         </option>
                       </PersistentState>
